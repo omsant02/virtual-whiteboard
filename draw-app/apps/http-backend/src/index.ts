@@ -1,8 +1,9 @@
 import express from "express"
 import * as z from "zod"
 import jwt from "jsonwebtoken"
-import { JWT_SECRET } from "./config"
+import { JWT_SECRET } from "@repo/backend-common/config"
 import { middleware } from "./middleware"
+import {CreateUserSchema, SigninSchema, CreateRoomSchema} from "@repo/common/types"
 
 const app = express()
 app.use(express.json())
@@ -12,10 +13,8 @@ const userValidation = z.object({
     password: z.string()
 })
 
-type UserValidation = z.infer<typeof userValidation>
-
 app.post("/signup", (req, res) => {
-    const result = userValidation.safeParse(req.body);
+    const result = CreateUserSchema.safeParse(req.body);
     if(!result.success) {
         return res.status(400).json({
             message: "incorrect format"
@@ -29,7 +28,7 @@ app.post("/signup", (req, res) => {
 })
 
 app.post("signin", (req, res) => {
-    const result = userValidation.safeParse(req.body);
+    const result = SigninSchema.safeParse(req.body);
     if(!result.success) {
         return res.status(400).json({
             message: "incorrect format"
@@ -48,6 +47,12 @@ app.post("signin", (req, res) => {
 })
 
 app.post("room", middleware,  (req, res) => {
+    const result = CreateRoomSchema.safeParse(req.body);
+    if(!result.success) {
+        return res.status(400).json({
+            message: "incorrect format"
+        })
+    }
     res.json({
         roomId: 123
     })
