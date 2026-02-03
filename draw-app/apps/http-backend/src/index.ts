@@ -9,9 +9,11 @@ import {
 } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
 const JWT_SECRET = process.env.JWT_SECRET || "123123";
+import cors from "cors"
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 app.post("/signup", async (req, res) => {
   const result = CreateUserSchema.safeParse(req.body);
